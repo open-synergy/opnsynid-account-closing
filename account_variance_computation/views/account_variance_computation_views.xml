@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017 OpenSynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<openerp>
+<data>
+<record id="account_variance_computation_view_search" model="ir.ui.view">
+    <field name="name">account.variance_computation form</field>
+    <field name="model">account.variance_computation</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="date_trx"/>
+            <field name="real_cost_account_id"/>
+            <field name="period_id"/>
+            <group name="group_main" string="Group By">
+                <filter name="grp_date_trx" string="Date Transaction" context="{'group_by':'date_trx'}"/>
+                <filter name="grp_period" string="Period" context="{'group_by':'period_id'}"/>
+                <filter name="grp_real_cost_account" string="Real Cost Account" context="{'group_by':'real_cost_account_id'}"/>
+                <filter name="grp_state" string="State" context="{'group_by':'state'}"/>
+            </group>
+        </search>
+    </field>
+</record>
+
+<record id="account_variance_computation_view_tree" model="ir.ui.view">
+    <field name="name">account.variance_computation tree</field>
+    <field name="model">account.variance_computation</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="name"/>
+            <field name="date_trx"/>
+            <field name="period_id"/>
+            <field name="real_cost_account_id"/>
+            <field name="real_cost"/>
+            <field name="company_id" groups="base.group_multi_company"/>
+            <field name="state"/>
+        </tree>
+    </field>
+</record>
+
+<record id="account_variance_computation_view_form" model="ir.ui.view">
+    <field name="name">account.variance_computation form</field>
+    <field name="model">account.variance_computation</field>
+    <field name="arch" type="xml">
+        <form>
+            <header>
+                <button name="button_action_confirm" type="object" string="Confirm" class="oe_highlight" states="draft"/>
+                <button name="button_action_approve" type="object" string="Approve" class="oe_highlight" states="confirmed"/>
+                <button name="button_action_post" type="object" string="Posted" class="oe_highlight" states="approved"/>
+                <button name="button_action_cancel" type="object" string="Cancel" states="draft,confirmed,approved,posted"/>
+                <button name="button_action_draft" type="object" string="Reset to Draft" states="cancelled"/>
+                <field name="state" widget="statusbar"/>
+            </header>
+            <sheet>
+                <label for="name"/>
+                <h1>
+                    <field name="name"/>
+                </h1>
+                <group name="group_1" colspan="4" col="2">
+                    <group name="group_1_1" colspan="1" col="2">
+                        <field name="date_trx"/>
+                        <field name="period_id"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                    <group name="group_1_2">
+                        <field name="real_cost_account_id"
+                            domain="[('type','=','other')]"/>
+                        <field name="journal_id"
+                            domain="[('avalaible_for_variance_computation','=',True)]"
+                            />
+                        <field name="analytic_account_id"/>
+                    </group>
+                </group>
+                <notebook colspan="4">
+                    <page name="page_cost_allocation" string="Cost Allocation">
+                        <group name="group_3" colspan="4" col="2">
+                            <field name="real_cost"/>
+                            <field name="total_cost_allocation"/>
+                            <field name="allocation_diff"/>
+                        </group>
+                        <field name="line_ids" colspan="4">
+                            <tree>
+                                <field name="applied_account_id"/>
+                                <field name="applied_cost"/>
+                                <field name="cost_allocation"/>
+                                <field name="over_variance"/>
+                                <field name="under_variance"/>
+                            </tree>
+                            <form>
+                                <group name="group_2" colspan="4" col="2">
+                                    <group name="group_2_1" colspan="1" col="2">
+                                        <field name="applied_account_id"
+                                            domain="[('type','=','other')]"/>
+                                        <field name="applied_cost"/>
+                                    </group>
+                                    <group name="group_2_2" colspan="1" col="2">
+                                        <field name="cost_allocation"/>
+                                        <field name="over_variance"/>
+                                        <field name="under_variance"/>
+                                        <field name="over_variance_account_id"/>
+                                        <field name="under_variance_account_id"/>
+                                    </group>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page name="page_accounting" string="Accounting Information">
+                        <group name="group_4" colspan="4" col="2">
+                            <field name="account_move_id"/>
+                        </group>
+                        <field name="account_move_line_ids" nolabel="1"/>
+                    </page>
+                    <page name="page_note" string="Notes">
+                        <field name="note"/>
+                    </page>
+                    <page name="page_log" string="Logs" groups="base.group_erp_manager">
+                        <group name="group_5" colspan="4" col="3">
+                            <field name="confirmed_date" string="Confirm"/>
+                            <field name="confirmed_by" nolabel="1"/>
+                            <field name="approved_date" string="Approve"/>
+                            <field name="approved_by" nolabel="1"/>
+                            <field name="posted_date" string="Post"/>
+                            <field name="posted_by" nolabel="1"/>
+                            <field name="cancelled_date" string="Cancel"/>
+                            <field name="cancelled_by" nolabel="1"/>
+                        </group>
+                    </page>
+                </notebook>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+        </form>
+    </field>
+</record>
+
+<record id="account_variance_computation_action" model="ir.actions.act_window">
+    <field name="name">Disposition of Variance</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">account.variance_computation</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+    <field name="search_view_id" ref="account_variance_computation_view_search"/>
+</record>
+
+<menuitem
+    id="account_variance_computation_menu"
+    name="Disposition of Variance"
+    parent="account.menu_finance_recurrent_entries"
+    groups="account.group_account_user"
+    action="account_variance_computation_action"
+    sequence="10"
+    />
+</data>
+</openerp>
