@@ -2,22 +2,21 @@
    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
    :alt: License: AGPL-3
 
-============================
-Account Variance Computation
-============================
+=======================
+Disposition of Variance
+=======================
 
-<<TO DO>>
 
 Installation
 ============
 
 To install this module, you need to:
 
-1.  Clone the branch 8.0 of the repository https://github.com/open-synergy/opnsynid-closing
+1.  Clone the branch 8.0 of the repository https://github.com/open-synergy/opnsynid-account-closing
 2.  Add the path to this repository in your configuration (addons-path)
 3.  Update the module list
 4.  Go to menu *Setting -> Modules -> Local Modules*
-5.  Search For *Account Variance Computation*
+5.  Search For *Disposition of Variance*
 6.  Install the module
 
 Credits

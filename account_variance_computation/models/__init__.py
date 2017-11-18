@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from . import (
-	account_variance_computation,
-	account_variance_computation_line
+    account_journal,
+    account_variance_computation,
+    account_variance_computation_line
 )
