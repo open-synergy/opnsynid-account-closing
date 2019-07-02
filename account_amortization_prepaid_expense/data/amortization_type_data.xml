@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!-- Copyright 2019 OpenSynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0) -->
+<openerp>
+<data>
+
+<record id="amortization_type_prepaid_expense" model="account.amortization_type">
+    <field name="name">Prepaid Expense</field>
+    <field name="code">PE</field>
+    <field name="direction">dr</field>
+</record>
+
+</data>
+</openerp>
