@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 OpenSynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<openerp>
+<data>
+<record id="account_prepaid_income_amortization_view_search" model="ir.ui.view">
+    <field name="name">account.prepaid_income_amortization form</field>
+    <field name="model">account.prepaid_income_amortization</field>
+    <field name="inherit_id" ref="account_amortization_common.account_amortization_common_view_search"/>
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data/>
+    </field>
+</record>
+
+<record id="account_prepaid_income_amortization_view_tree" model="ir.ui.view">
+    <field name="name">account.prepaid_income_amortization tree</field>
+    <field name="model">account.prepaid_income_amortization</field>
+    <field name="inherit_id" ref="account_amortization_common.account_amortization_common_view_tree"/>
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data/>
+    </field>
+</record>
+
+<record id="account_prepaid_income_amortization_view_form" model="ir.ui.view">
+    <field name="name">account.prepaid_income_amortization form</field>
+    <field name="model">account.prepaid_income_amortization</field>
+    <field name="inherit_id" ref="account_amortization_common.account_amortization_common_view_form"/>
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <data/>
+    </field>
+</record>
+
+<record id="account_prepaid_income_amortization_action" model="ir.actions.act_window">
+    <field name="name">Prepaid Income Amortization</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">account.prepaid_income_amortization</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+    id="account_prepaid_income_amortization_menu"
+    name="Prepaid Incomes"
+    parent="account_amortization_common.amortization_menu"
+    action="account_prepaid_income_amortization_action"
+    sequence="1"
+    />
+</data>
+</openerp>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!-- Copyright 2019 OpenSynergy Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0) -->
+<openerp>
+<data>
+
+<record id="amortization_type_prepaid_income" model="account.amortization_type">
+    <field name="name">Prepaid Income</field>
+    <field name="code">PI</field>
+    <field name="direction">cr</field>
+</record>
+
+</data>
+</openerp>
