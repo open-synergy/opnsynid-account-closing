@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+amortization_type_employee,account.amortization_type - user,model_account_amortization_type,base.group_user,1,1,1,1
+amortization_type_all,account.amortization_type - all,model_account_amortization_type,,0,0,0,0
+amortization_type_mapping_employee,account.amortization_type_account_mapping - user,model_account_amortization_type_account_mapping,base.group_user,1,1,1,1
+amortization_type_mapping_all,account.amortization_type_account_mapping - all,model_account_amortization_type_account_mapping,,1,0,0,0
