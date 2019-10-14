@@ -441,6 +441,7 @@ class AccountAmortizationCommon(models.AbstractModel):
     @api.multi
     def _compute_amortization_schedule(self):
         self.ensure_one()
+        self.schedule_ids.unlink()
         amount = self._get_period_amount()
         obj_schedule = self.env[self._get_amortization_schedule_name()]
         pd_schedule = self._get_amortization_schedule()
