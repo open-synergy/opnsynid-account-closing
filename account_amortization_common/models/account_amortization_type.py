@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright 2019 OpenSynergy Indonesia
+# Copyright 2020 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import models, fields
@@ -49,10 +50,10 @@ class AccountAmortizationType(models.Model):
         column1="amortization_id",
         column2="group_id",
     )
-    amortization_approve_grp_ids = fields.Many2many(
-        string="Allow To Approve Amortization",
+    amortization_restart_validation_grp_ids = fields.Many2many(
+        string="Allow To Restart Validation Amortization",
         comodel_name="res.groups",
-        relation="rel_amortization_type_approve_amortization",
+        relation="rel_amortization_type_restart_validation_amortization",
         column1="amortization_id",
         column2="group_id",
     )

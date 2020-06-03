@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright 2019 OpenSynergy Indonesia
+# Copyright 2020 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import models, fields, api, _
@@ -21,8 +22,11 @@ class AccountAmortizationCommon(models.AbstractModel):
         "mail.thread",
         "base.sequence_document",
         "base.workflow_policy_object",
-        "base.cancel.reason_common"
+        "base.cancel.reason_common",
+        "tier.validation",
     ]
+    _state_from = ["draft", "confirm"]
+    _state_to = ["open"]
     _description = "Abstract Model for Amortization"
 
     @api.model
@@ -252,15 +256,6 @@ class AccountAmortizationCommon(models.AbstractModel):
         comodel_name="res.users",
         readonly=True,
     )
-    approve_date = fields.Datetime(
-        string="Approve Date",
-        readonly=True,
-    )
-    approve_user_id = fields.Many2one(
-        string="Approve By",
-        comodel_name="res.users",
-        readonly=True,
-    )
     cancel_date = fields.Datetime(
         string="Cancel Date",
         readonly=True,
@@ -276,8 +271,8 @@ class AccountAmortizationCommon(models.AbstractModel):
         string="Can Confirm",
         compute="_compute_policy",
     )
-    approve_ok = fields.Boolean(
-        string="Can Approve",
+    restart_validation_ok = fields.Boolean(
+        string="Can Restart Validation",
         compute="_compute_policy",
     )
     cancel_ok = fields.Boolean(
@@ -294,6 +289,7 @@ class AccountAmortizationCommon(models.AbstractModel):
         for document in self:
             document.write(document._prepare_confirm_data())
             document._compute_amortization_schedule()
+            document.request_validation()
 
     @api.multi
     def action_approve(self):
@@ -312,6 +308,7 @@ class AccountAmortizationCommon(models.AbstractModel):
             if not document._check_cancel():
                 raise UserError(msg)
             document.write(document._prepare_cancel_data())
+            document.restart_validation()
             document.schedule_ids.unlink()
 
     @api.multi
@@ -497,3 +494,18 @@ class AccountAmortizationCommon(models.AbstractModel):
                     raise UserError(strWarning)
         _super = super(AccountAmortizationCommon, self)
         _super.unlink()
+
+    @api.multi
+    def validate_tier(self):
+        _super = super(AccountAmortizationCommon, self)
+        _super.validate_tier()
+        for document in self:
+            if document.validated:
+                document.action_approve()
+
+    @api.multi
+    def restart_validation(self):
+        _super = super(AccountAmortizationCommon, self)
+        _super.restart_validation()
+        for document in self:
+            document.request_validation()
