@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright 2019 OpenSynergy Indonesia
+# Copyright 2020 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import models, fields, api, _
@@ -21,8 +22,11 @@ class AccountAmortizationCommon(models.AbstractModel):
         "mail.thread",
         "base.sequence_document",
         "base.workflow_policy_object",
-        "base.cancel.reason_common"
+        "base.cancel.reason_common",
+        "tier.validation",
     ]
+    _state_from = ["confirm"]
+    _state_to = ["open"]
     _description = "Abstract Model for Amortization"
 
     @api.model
@@ -241,6 +245,11 @@ class AccountAmortizationCommon(models.AbstractModel):
         required=True,
         readonly=True,
     )
+    cron_id = fields.Many2one(
+        string="Cron",
+        comodel_name="ir.cron",
+        readonly=True,
+    )
 
     # Log Fields
     confirm_date = fields.Datetime(
@@ -288,6 +297,30 @@ class AccountAmortizationCommon(models.AbstractModel):
         string="Can Restart",
         compute="_compute_policy",
     )
+
+    @api.multi
+    def action_create_cron(self):
+        for document in self:
+            document._generate_cron()
+
+    @api.multi
+    def action_delete_cron(self):
+        for document in self:
+            document.cron_id.unlink()
+
+    @api.multi
+    def _generate_cron(self):
+        self.ensure_one()
+        data = self._prepare_cron_data()
+
+        if data:
+            obj_cron = self.env["ir.cron"]
+            cron = obj_cron.create(data)
+            self.write({"cron_id": cron.id})
+
+    @api.multi
+    def _prepare_cron_data(self):
+        return False
 
     @api.multi
     def action_confirm(self):

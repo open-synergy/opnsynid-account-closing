@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright 2019 OpenSynergy Indonesia
+     Copyright 2020 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 
 <openerp>
@@ -15,6 +16,12 @@
             <field name="journal_id"/>
             <field name="currency_id"/>
             <field name="company_id" groups="base.group_multi_company"/>
+            <filter name="needs_review" string="Needs my Review"
+                    domain="[('reviewer_ids','in',uid), ('state', 'not in', ['done', 'cancel'])]"
+                    help="My Amortization to review"/>
+            <filter name="tier_validated" string="Validated"
+                    domain="[('validated', '=', True)]"
+                    help="Amortization validated and ready to be draft"/>
             <group name="group_main" string="Group By">
                 <filter name="grp_account" string="Account" context="{'group_by':'account_id'}"/>
                 <filter name="grp_contra_account" string="Contra Account" context="{'group_by':'contra_account_id'}"/>
@@ -59,13 +66,56 @@
     <field name="arch" type="xml">
         <form>
             <header>
+                <button name="request_validation"
+                    string="Request Validation"
+                    attrs="{'invisible': ['|','|',('need_validation', '!=', True),('rejected','=',True),('state','not in',['confirm'])]}"
+                    type="object"/>
+                <button name="restart_validation"
+                    string="Restart Validation"
+                    attrs="{'invisible': ['|','|',('review_ids', '=', []),('rejected','=',False),('state','not in',['confirm'])]}"
+                    type="object"/>
                 <button name="action_confirm" type="object" string="Confirm" class="oe_highlight" attrs="{'invisible':['|',('state','!=','draft'),('confirm_ok','=',False)]}" confirm="Confirm prepaid expense amortization. Are you sure?"/>
                 <button name="action_compute_amortization_schedule" type="object" string="Create Amortization Schedule" states="draft"/>
                 <button name="action_approve" type="object" string="Approve" class="oe_highlight" attrs="{'invisible':['|',('state','!=','confirm'),('approve_ok','=',False)]}" confirm="Approve prepaid expense amortization. Are you sure?"/>
+                <button name="action_create_cron" string="Generate Cron" type="object" attrs="{'invisible':['|', ('state','!=','open'), ('cron_id','!=',False)]}"/>
+                <button name="action_delete_cron" string="Delete Cron" type="object" attrs="{'invisible':['|', ('state','!=','open'), ('cron_id','=',False)]}"/>
                 <button name="%(base_print_policy.base_print_document_action)d" string="Print" type="action" icon="gtk-print"/>
                 <button name="%(base_cancel_reason.base_cancel_reason_wizard_action)d" type="action" string="Cancel" attrs="{'invisible':['|',('state','=','cancel'),('cancel_ok','=',False)]}" confirm="Cancel prepaid expense amortization. Are you sure?"/>
                 <button name="action_restart" type="object" string="Restart" attrs="{'invisible':['|',('state','!=','cancel'),('restart_ok','=',False)]}" confirm="Restart prepaid expense amortization. Are you sure?"/>
                 <field name="state" widget="statusbar" statusbar_visible="draft,confirm,open"/>
+                <field name="need_validation" invisible="1"/>
+                <field name="validated" invisible="1"/>
+                <field name="rejected" invisible="1"/>
+                <div class="alert alert-warning"
+                     attrs="{'invisible': ['|', '|', '|',
+                     ('validated', '=', True), ('state', 'not in', ['confirm']),
+                     ('rejected', '=', True), ('review_ids', '=', [])]}"
+                     style="margin-bottom:0px;">
+                    <p><i class="fa fa-info-circle"/>This Amortization needs to be
+                        validated.
+                        <button name="validate_tier"
+                            string="Validate"
+                            attrs="{'invisible': [('review_ids', '=', [])]}"
+                            type="object"
+                            class="oe_inline oe_button btn-success"
+                            icon="terp-check"/>
+                        <button name="reject_tier"
+                            string="Reject"
+                            type="object"
+                            class="btn-icon btn-danger"
+                            icon="terp-gtk-stop"/>
+                    </p>
+                </div>
+                <div class="alert alert-success"
+                     attrs="{'invisible': ['|', '|', ('validated', '!=', True), ('state', 'not in', ['confirm']), ('review_ids', '=', [])]}"
+                     style="margin-bottom:0px;">
+                    <p><i class="fa fa-thumbs-up"/> Operation has been <b>validated</b>!</p>
+                </div>
+                <div class="alert alert-danger"
+                     attrs="{'invisible': ['|', '|', ('rejected', '!=', True), ('state', 'not in', ['confirm']), ('review_ids', '=', [])]}"
+                     style="margin-bottom:0px;">
+                    <p><i class="fa fa-thumbs-down"/> Operation has been <b>rejected</b>.</p>
+                </div>
             </header>
             <sheet>
                 <div class="oe_right oe_button_box" style="width: 300px;" name="buttons">
@@ -105,6 +155,7 @@
                             <field name="date_start"/>
                             <field name="period"/>
                             <field name="period_number"/>
+                            <field name="cron_id"/>
                         </group>
                         <field name="schedule_ids" colspan="4" nolabel="1">
                             <tree create="false" edit="false" delete="false">
@@ -135,6 +186,13 @@
                             <field name="approve_ok"/>
                             <field name="cancel_ok"/>
                             <field name="restart_ok"/>
+                        </group>
+                    </page>
+                    <page string="Reviews" name="tier_validation">
+                        <group>
+                            <field name="definition_id"/>
+                            <field name="reviewer_partner_ids" widget="many2many_tags"/>
+                            <field name="review_ids" readonly="1"/>
                         </group>
                     </page>
                     <page name="log" string="Logs"  groups="base.group_system">
