@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <record id="cron_prepaid_income_schedule" model="ir.cron">
+            <field name='name'>Prepaid Income Amortization Schedule</field>
+            <field name='interval_number'>1</field>
+            <field name='interval_type'>days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">False</field>
+            <field name="doall" eval="False" />
+            <field name="model">account.prepaid_income_amortization_schedule</field>
+            <field name="function">cron_create_account_move</field>
+            <field name="args">()</field>
+        </record>
+
+    </data>
+</openerp>
