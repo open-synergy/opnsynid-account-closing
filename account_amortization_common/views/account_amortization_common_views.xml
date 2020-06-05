@@ -72,11 +72,10 @@
                     type="object"/>
                 <button name="restart_validation"
                     string="Restart Validation"
-                    attrs="{'invisible': ['|','|',('review_ids', '=', []),('rejected','=',False),('state','not in',['confirm'])]}"
+                    attrs="{'invisible': ['|','|','|',('review_ids', '=', []),('rejected','=',False),('state','not in',['confirm']),('restart_validation_ok','=',False)]}"
                     type="object"/>
                 <button name="action_confirm" type="object" string="Confirm" class="oe_highlight" attrs="{'invisible':['|',('state','!=','draft'),('confirm_ok','=',False)]}" confirm="Confirm prepaid expense amortization. Are you sure?"/>
                 <button name="action_compute_amortization_schedule" type="object" string="Create Amortization Schedule" states="draft"/>
-                <button name="action_approve" type="object" string="Approve" class="oe_highlight" attrs="{'invisible':['|',('state','!=','confirm'),('approve_ok','=',False)]}" confirm="Approve prepaid expense amortization. Are you sure?"/>
                 <button name="action_create_cron" string="Generate Cron" type="object" attrs="{'invisible':['|', ('state','!=','open'), ('cron_id','!=',False)]}"/>
                 <button name="action_delete_cron" string="Delete Cron" type="object" attrs="{'invisible':['|', ('state','!=','open'), ('cron_id','=',False)]}"/>
                 <button name="%(base_print_policy.base_print_document_action)d" string="Print" type="action" icon="gtk-print"/>
@@ -183,7 +182,7 @@
                     <page name="policy" string="Policies"  groups="base.group_system">
                         <group name="policy_1" colspan="4" col="2">
                             <field name="confirm_ok"/>
-                            <field name="approve_ok"/>
+                            <field name="restart_validation_ok"/>
                             <field name="cancel_ok"/>
                             <field name="restart_ok"/>
                         </group>
@@ -200,8 +199,6 @@
                             <group name="group_log_1" colspan="4" col="3">
                                 <field name="confirm_date" string="Confirmation"/>
                                 <field name="confirm_user_id" nolabel="1"/>
-                                <field name="approve_date" string="Approval"/>
-                                <field name="approve_user_id" nolabel="1"/>
                                 <field name="cancel_date" string="Cancellation"/>
                                 <field name="cancel_user_id" nolabel="1"/>
                             </group>

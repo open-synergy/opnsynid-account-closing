@@ -50,10 +50,10 @@ class AccountAmortizationType(models.Model):
         column1="amortization_id",
         column2="group_id",
     )
-    amortization_approve_grp_ids = fields.Many2many(
-        string="Allow To Approve Amortization",
+    amortization_restart_validation_grp_ids = fields.Many2many(
+        string="Allow To Restart Validation Amortization",
         comodel_name="res.groups",
-        relation="rel_amortization_type_approve_amortization",
+        relation="rel_amortization_type_restart_validation_amortization",
         column1="amortization_id",
         column2="group_id",
     )
