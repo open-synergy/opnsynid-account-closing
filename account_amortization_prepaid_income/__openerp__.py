@@ -13,6 +13,9 @@
     "depends": [
         "account_amortization_common",
     ],
+    "images": [
+        "static/description/banner.png",
+    ],
     "data": [
         "security/ir.model.access.csv",
         "data/ir_sequence_data.xml",
