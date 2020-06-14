@@ -19,4 +19,7 @@
         "views/account_journal_views.xml",
         "views/account_variance_computation_views.xml",
     ],
+    "images": [
+        "static/description/banner.png",
+    ],    
 }
