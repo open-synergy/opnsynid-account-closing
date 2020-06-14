@@ -30,4 +30,7 @@
         "views/account_amortization_type_views.xml",
         "views/account_amortization_common_views.xml",
     ],
+    "images": [
+        "static/description/banner.png",
+    ],    
 }
