@@ -23,4 +23,7 @@
         "data/ir_cron.xml",
         "views/account_prepaid_expense_amortization_views.xml",
     ],
+    "images": [
+        "static/description/banner.png",
+    ],    
 }
