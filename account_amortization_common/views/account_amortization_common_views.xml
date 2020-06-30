@@ -19,9 +19,6 @@
             <filter name="needs_review" string="Needs my Review"
                     domain="[('reviewer_ids','in',uid), ('state', 'not in', ['done', 'cancel'])]"
                     help="My Amortization to review"/>
-            <filter name="tier_validated" string="Validated"
-                    domain="[('validated', '=', True)]"
-                    help="Amortization validated and ready to be draft"/>
             <group name="group_main" string="Group By">
                 <filter name="grp_account" string="Account" context="{'group_by':'account_id'}"/>
                 <filter name="grp_contra_account" string="Contra Account" context="{'group_by':'contra_account_id'}"/>
@@ -76,8 +73,6 @@
                     type="object"/>
                 <button name="action_confirm" type="object" string="Confirm" class="oe_highlight" attrs="{'invisible':['|',('state','!=','draft'),('confirm_ok','=',False)]}" confirm="Confirm prepaid expense amortization. Are you sure?"/>
                 <button name="action_compute_amortization_schedule" type="object" string="Create Amortization Schedule" states="draft"/>
-                <button name="action_create_cron" string="Generate Cron" type="object" attrs="{'invisible':['|', ('state','!=','open'), ('cron_id','!=',False)]}"/>
-                <button name="action_delete_cron" string="Delete Cron" type="object" attrs="{'invisible':['|', ('state','!=','open'), ('cron_id','=',False)]}"/>
                 <button name="%(base_print_policy.base_print_document_action)d" string="Print" type="action" icon="gtk-print"/>
                 <button name="%(base_cancel_reason.base_cancel_reason_wizard_action)d" type="action" string="Cancel" attrs="{'invisible':['|',('state','=','cancel'),('cancel_ok','=',False)]}" confirm="Cancel prepaid expense amortization. Are you sure?"/>
                 <button name="action_restart" type="object" string="Restart" attrs="{'invisible':['|',('state','!=','cancel'),('restart_ok','=',False)]}" confirm="Restart prepaid expense amortization. Are you sure?"/>
@@ -154,7 +149,6 @@
                             <field name="date_start"/>
                             <field name="period"/>
                             <field name="period_number"/>
-                            <field name="cron_id"/>
                         </group>
                         <field name="schedule_ids" colspan="4" nolabel="1">
                             <tree create="false" edit="false" delete="false">

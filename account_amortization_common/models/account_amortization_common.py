@@ -245,11 +245,6 @@ class AccountAmortizationCommon(models.AbstractModel):
         required=True,
         readonly=True,
     )
-    cron_id = fields.Many2one(
-        string="Cron",
-        comodel_name="ir.cron",
-        readonly=True,
-    )
 
     # Log Fields
     confirm_date = fields.Datetime(
@@ -293,21 +288,6 @@ class AccountAmortizationCommon(models.AbstractModel):
     def action_create_cron(self):
         for document in self:
             document._generate_cron()
-
-    @api.multi
-    def action_delete_cron(self):
-        for document in self:
-            document.cron_id.unlink()
-
-    @api.multi
-    def _generate_cron(self):
-        self.ensure_one()
-        data = self._prepare_cron_data()
-
-        if data:
-            obj_cron = self.env["ir.cron"]
-            cron = obj_cron.create(data)
-            self.write({"cron_id": cron.id})
 
     @api.multi
     def _prepare_cron_data(self):
@@ -538,3 +518,18 @@ class AccountAmortizationCommon(models.AbstractModel):
         _super.restart_validation()
         for document in self:
             document.request_validation()
+
+    @api.model
+    def cron_create_account_move(self):
+        amortization_ids = self.search([])
+        for amortization in amortization_ids:
+            amortization._create_account_move()
+
+    @api.multi
+    def _create_account_move(self):
+        self.ensure_one()
+        date_now = fields.Date.today()
+        if self.schedule_ids:
+            for schedule in self.schedule_ids:
+                if schedule.date == date_now and schedule.state == "draft":
+                    schedule.action_create_account_move()
