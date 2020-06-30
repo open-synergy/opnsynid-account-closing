@@ -51,36 +51,3 @@ class PrepaidIncomeAmortization(models.Model):
     type_id = fields.Many2one(
         default=lambda self: self._default_type_id(),
     )
-
-    @api.multi
-    def _prepare_cron_data(self):
-        self.ensure_one()
-        cron_name = "Prepaid Income Amortization Schedule: %s" % (
-            self.name)
-        return {
-            "name": cron_name,
-            "user_id": self.env.user.id,
-            "active": True,
-            "interval_number": 1,
-            "interval_type": "days",
-            "numberofcall": -1,
-            "doall": True,
-            "model": "account.prepaid_income_amortization",
-            "function": "cron_create_account_move",
-            "args": "(%s,)" % (self.id),
-        }
-
-    @api.model
-    def cron_create_account_move(self, amortization_id):
-        amortization =\
-            self.browse([amortization_id])[0]
-        amortization._create_account_move()
-
-    @api.multi
-    def _create_account_move(self):
-        self.ensure_one()
-        date_now = fields.Date.today()
-        if self.schedule_ids:
-            for schedule in self.schedule_ids:
-                if schedule.date == date_now and schedule.state == "draft":
-                    schedule.action_create_account_move()

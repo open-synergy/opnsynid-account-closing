@@ -20,6 +20,7 @@
         "data/base_sequence_configurator_data.xml",
         "data/base_workflow_policy_data.xml",
         "data/base_cancel_reason_configurator_data.xml",
+        "data/ir_cron.xml",
         "views/account_prepaid_income_amortization_views.xml",
     ],
 }
