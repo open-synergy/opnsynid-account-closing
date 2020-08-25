@@ -25,5 +25,5 @@
     ],
     "images": [
         "static/description/banner.png",
-    ],    
+    ],
 }
