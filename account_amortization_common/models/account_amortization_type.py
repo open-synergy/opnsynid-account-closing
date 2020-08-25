@@ -65,7 +65,7 @@ class AccountAmortizationType(models.Model):
         column2="group_id",
     )
     amortization_restart_grp_ids = fields.Many2many(
-        string="Allow To Cancel Amortization",
+        string="Allow To Restart Amortization",
         comodel_name="res.groups",
         relation="rel_amortization_type_restart_amortization",
         column1="amortization_id",
