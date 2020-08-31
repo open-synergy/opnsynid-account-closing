@@ -175,3 +175,15 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
             debit, credit = credit, debit
 
         return debit, credit
+
+    @api.model
+    def cron_create_account_move(self):
+        date_now = fields.Date.today()
+        schedule_ids = self.search([
+            ("amortization_id.state", "=", "open"),
+            ("date", "=", date_now),
+            ("state", "=", "draft")
+        ])
+        if schedule_ids:
+            for schedule in schedule_ids:
+                schedule.action_create_account_move()

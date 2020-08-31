@@ -285,15 +285,6 @@ class AccountAmortizationCommon(models.AbstractModel):
     )
 
     @api.multi
-    def action_create_cron(self):
-        for document in self:
-            document._generate_cron()
-
-    @api.multi
-    def _prepare_cron_data(self):
-        return False
-
-    @api.multi
     def action_confirm(self):
         for document in self:
             document.write(document._prepare_confirm_data())
@@ -518,18 +509,3 @@ class AccountAmortizationCommon(models.AbstractModel):
         _super.restart_validation()
         for document in self:
             document.request_validation()
-
-    @api.model
-    def cron_create_account_move(self):
-        amortization_ids = self.search([])
-        for amortization in amortization_ids:
-            amortization._create_account_move()
-
-    @api.multi
-    def _create_account_move(self):
-        self.ensure_one()
-        date_now = fields.Date.today()
-        if self.schedule_ids:
-            for schedule in self.schedule_ids:
-                if schedule.date == date_now and schedule.state == "draft":
-                    schedule.action_create_account_move()
