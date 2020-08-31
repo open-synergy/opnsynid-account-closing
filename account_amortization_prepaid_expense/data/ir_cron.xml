@@ -2,14 +2,14 @@
 <openerp>
     <data noupdate="1">
 
-        <record id="cron_prepaid_expense" model="ir.cron">
-            <field name='name'>Prepaid Expense Amortization</field>
+        <record id="cron_prepaid_expense_schedule" model="ir.cron">
+            <field name='name'>Prepaid Expense Amortization Schedule</field>
             <field name='interval_number'>1</field>
             <field name='interval_type'>days</field>
             <field name="numbercall">-1</field>
             <field name="active">False</field>
             <field name="doall" eval="False" />
-            <field name="model">account.prepaid_expense_amortization</field>
+            <field name="model">account.prepaid_expense_amortization_schedule</field>
             <field name="function">cron_create_account_move</field>
             <field name="args">()</field>
         </record>
