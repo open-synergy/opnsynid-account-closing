@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 OpenSynergy Indonesia
+     Copyright 2020 PT Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<openerp>
+<data>
+    <!--  Amortization Prepaid Expense -->
+    <record id="dashboard_tile_all_prepaid_expense_amortization_draft" model="tile.tile">
+        <field name="name">All Prepaid Expense Amortization: Draft</field>
+        <field name="sequence">14</field>
+        <field name="domain">
+        [
+            ('state', '=', 'draft'),
+        ]
+        </field>
+        <field name="model_id" ref="account_amortization_prepaid_expense.model_account_prepaid_expense_amortization" />
+        <field name="action_id" ref="account_amortization_prepaid_expense.account_prepaid_expense_amortization_action" />
+        <field name="primary_function">count</field>
+        <field name="background_color">#776D8A</field>
+    </record>
+
+    <record id="dashboard_tile_all_prepaid_expense_amortization_waiting_for_approval" model="tile.tile">
+        <field name="name">All Prepaid Expense Amortization: Waiting For Approval</field>
+        <field name="sequence">14</field>
+        <field name="domain">
+        [
+        ('state', '=', 'confirm'),
+        ]
+        </field>
+        <field name="model_id" ref="account_amortization_prepaid_expense.model_account_prepaid_expense_amortization" />
+        <field name="action_id" ref="account_amortization_prepaid_expense.account_prepaid_expense_amortization_action" />
+        <field name="primary_function">count</field>
+        <field name="background_color">#776D8A</field>
+    </record>
+    
+    <record id="dashboard_tile_all_prepaid_expense_amortization_ready_to_process" model="tile.tile">
+        <field name="name">All Prepaid Expense Amortization: Ready To Process</field>
+        <field name="sequence">14</field>
+        <field name="domain">
+        [
+        ('state', '=', 'approve'),
+        ]
+        </field>
+        <field name="model_id" ref="account_amortization_prepaid_expense.model_account_prepaid_expense_amortization" />
+        <field name="action_id" ref="account_amortization_prepaid_expense.account_prepaid_expense_amortization_action" />
+        <field name="primary_function">count</field>
+        <field name="background_color">#776D8A</field>
+    </record>
+</data>
+</openerp>
