@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2021 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<openerp>
+<data>
+<record id="demo_account1" model="account.account">
+    <field name="name">Prepaid Rent - (test)</field>
+    <field name="user_type" ref="account.data_account_type_receivable" />
+    <field name="code">TPE01</field>
+    <field name="parent_id" ref="account.nca" />
+    <field name="reconcile" eval="True" />
+</record>
+
+<record id="demo_account2" model="account.account">
+    <field name="name">Prepaid Insurance - (test)</field>
+    <field name="user_type" ref="account.data_account_type_receivable" />
+    <field name="code">TPE02</field>
+    <field name="parent_id" ref="account.nca" />
+    <field name="reconcile" eval="True" />
+</record>
+
+<record id="demo_account3" model="account.account">
+    <field name="name">Rent Expense - (test)</field>
+    <field name="user_type" ref="account.data_account_type_expense" />
+    <field name="code">TEX01</field>
+    <field name="parent_id" ref="account.ovr" />
+    <field name="reconcile" eval="True" />
+</record>
+
+<record id="demo_account4" model="account.account">
+    <field name="name">Insurance Expense - (test)</field>
+    <field name="user_type" ref="account.data_account_type_expense" />
+    <field name="code">TEX02</field>
+    <field name="parent_id" ref="account.ovr" />
+    <field name="reconcile" eval="True" />
+</record>
+</data>
+</openerp>
