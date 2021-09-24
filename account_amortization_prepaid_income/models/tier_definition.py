@@ -9,7 +9,7 @@ class TierDefinition(models.Model):
     _inherit = "tier.definition"
 
     @api.model
-    def _get_tier_validation_model_names(self):
+    def _get_tier_validation_model_names(self):  # pragma: no cover
         res = super(TierDefinition, self)._get_tier_validation_model_names()
         res.append("account.prepaid_income_amortization")
         return res

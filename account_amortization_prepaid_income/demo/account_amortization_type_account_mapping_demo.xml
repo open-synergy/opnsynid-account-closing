@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2020 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<openerp>
+<data>
+<record id="demo_mapping1" model="account.amortization_type_account_mapping">
+    <field
+                name="type_id"
+                ref="account_amortization_prepaid_income.amortization_type_prepaid_income"
+            />
+    <field name="account_id" ref="account_amortization_prepaid_income.demo_account1" />
+    <field
+                name="contra_account_id"
+                ref="account_amortization_prepaid_income.demo_account3"
+            />
+</record>
+
+<record id="demo_mapping2" model="account.amortization_type_account_mapping">
+    <field
+                name="type_id"
+                ref="account_amortization_prepaid_income.amortization_type_prepaid_income"
+            />
+    <field name="account_id" ref="account_amortization_prepaid_income.demo_account2" />
+    <field
+                name="contra_account_id"
+                ref="account_amortization_prepaid_income.demo_account4"
+            />
+</record>
+</data>
+</openerp>
