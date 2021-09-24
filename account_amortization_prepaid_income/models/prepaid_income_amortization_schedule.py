@@ -3,14 +3,12 @@
 # Copyright 2020 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api
+from openerp import api, fields, models
 
 
 class PrepaidIncomeAmortizationSchedule(models.Model):
     _name = "account.prepaid_income_amortization_schedule"
-    _inherit = [
-        "account.amortization_schedule_common"
-    ]
+    _inherit = ["account.amortization_schedule_common"]
     _description = "Prepaid Income Amortization Schedule"
 
     @api.multi

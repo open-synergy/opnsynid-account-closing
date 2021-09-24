@@ -3,7 +3,7 @@
 # Copyright 2020 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api, _
+from openerp import _, api, fields, models
 
 
 class AccountAmortizationScheduleCommon(models.AbstractModel):
@@ -13,8 +13,7 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
     @api.multi
     def _compute_amortization_state(self):
         for document in self:
-            document.amortization_state = \
-                document.amortization_id.state
+            document.amortization_state = document.amortization_id.state
 
     amortization_id = fields.Many2one(
         string="Amortization",
@@ -66,9 +65,11 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
     def action_create_account_move(self):
         for document in self:
             document._create_account_move()
-            document.write({
-                "state": "post",
-            })
+            document.write(
+                {
+                    "state": "post",
+                }
+            )
             if document.amortization_id._check_done():
                 document.amortization_id.action_done()
 
@@ -76,9 +77,11 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
     def action_remove_account_move(self):
         for document in self:
             document._remove_account_move()
-            document.write({
-                "state": "draft",
-            })
+            document.write(
+                {
+                    "state": "draft",
+                }
+            )
 
     @api.multi
     def _remove_account_move(self):
@@ -127,12 +130,16 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
         self.ensure_one()
         debit, credit = self._get_aml_amount()
         amortization = self.amortization_id
-        partner_id = amortization.move_line_id.partner_id and \
-            amortization.move_line_id.partner_id.id or \
-            False
-        analytic_id = amortization.move_line_id.analytic_account_id and \
-            amortization.move_line_id.analytic_account_id.id or \
-            False
+        partner_id = (
+            amortization.move_line_id.partner_id
+            and amortization.move_line_id.partner_id.id
+            or False
+        )
+        analytic_id = (
+            amortization.move_line_id.analytic_account_id
+            and amortization.move_line_id.analytic_account_id.id
+            or False
+        )
         return {
             "move_id": move.id,
             "name": _("Amortization"),
@@ -148,9 +155,7 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
         self.ensure_one()
         debit, credit = self._get_aml_amount(True)
         amortization = self.amortization_id
-        analytic_id = amortization.analytic_id and \
-            amortization.analytic_id.id or \
-            False
+        analytic_id = amortization.analytic_id and amortization.analytic_id.id or False
         return {
             "move_id": move.id,
             "name": _("Amortization"),
@@ -179,11 +184,13 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
     @api.model
     def cron_create_account_move(self):
         date_now = fields.Date.today()
-        schedule_ids = self.search([
-            ("amortization_id.state", "=", "open"),
-            ("date", "=", date_now),
-            ("state", "=", "draft")
-        ])
+        schedule_ids = self.search(
+            [
+                ("amortization_id.state", "=", "open"),
+                ("date", "=", date_now),
+                ("state", "=", "draft"),
+            ]
+        )
         if schedule_ids:
             for schedule in schedule_ids:
                 schedule.action_create_account_move()

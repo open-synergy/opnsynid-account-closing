@@ -3,9 +3,10 @@
 # Copyright 2020 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api, _
-from openerp.exceptions import Warning as UserError
 import logging
+
+from openerp import _, api, fields, models
+from openerp.exceptions import Warning as UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -64,9 +65,11 @@ class AccountAmortizationCommon(models.AbstractModel):
                 amount = aml.credit
             residual = aml.amount_residual
 
-            currency_id = aml.currency_id and \
-                aml.currency_id.id or \
-                document.company_id.currency_id.id
+            currency_id = (
+                aml.currency_id
+                and aml.currency_id.id
+                or document.company_id.currency_id.id
+            )
 
             document.account_id = account_id
             document.amount = amount
@@ -82,7 +85,7 @@ class AccountAmortizationCommon(models.AbstractModel):
             "draft": [
                 ("readonly", False),
             ],
-        }
+        },
     )
     company_id = fields.Many2one(
         string="Company",
@@ -106,7 +109,7 @@ class AccountAmortizationCommon(models.AbstractModel):
             "draft": [
                 ("readonly", False),
             ],
-        }
+        },
     )
     move_line_id = fields.Many2one(
         string="Move Line",
@@ -118,7 +121,7 @@ class AccountAmortizationCommon(models.AbstractModel):
             "draft": [
                 ("readonly", False),
             ],
-        }
+        },
     )
     allowed_move_line_ids = fields.Many2many(
         string="Allowed Move Lines",
@@ -144,7 +147,7 @@ class AccountAmortizationCommon(models.AbstractModel):
             "draft": [
                 ("readonly", False),
             ],
-        }
+        },
     )
     analytic_id = fields.Many2one(
         string="Analytic Account",
@@ -155,7 +158,7 @@ class AccountAmortizationCommon(models.AbstractModel):
             "draft": [
                 ("readonly", False),
             ],
-        }
+        },
     )
     journal_id = fields.Many2one(
         string="Journal",
@@ -170,7 +173,7 @@ class AccountAmortizationCommon(models.AbstractModel):
             "draft": [
                 ("readonly", False),
             ],
-        }
+        },
     )
     date = fields.Date(
         string="Transaction Date",
@@ -185,7 +188,7 @@ class AccountAmortizationCommon(models.AbstractModel):
             "draft": [
                 ("readonly", False),
             ],
-        }
+        },
     )
     period = fields.Selection(
         string="Period",
@@ -200,7 +203,7 @@ class AccountAmortizationCommon(models.AbstractModel):
             "draft": [
                 ("readonly", False),
             ],
-        }
+        },
     )
     period_number = fields.Integer(
         string="Period Number",
@@ -212,7 +215,7 @@ class AccountAmortizationCommon(models.AbstractModel):
             "draft": [
                 ("readonly", False),
             ],
-        }
+        },
     )
     schedule_ids = fields.One2many(
         string="Amortization Schedule",
@@ -394,10 +397,7 @@ class AccountAmortizationCommon(models.AbstractModel):
         self.ensure_one()
         result = True
         obj_schedule = self.env[self._get_amortization_schedule_name()]
-        criteria = [
-            ("state", "=", "post"),
-            ("amortization_id", "=", self.id)
-        ]
+        criteria = [("state", "=", "post"), ("amortization_id", "=", self.id)]
         post_count = obj_schedule.search_count(criteria)
         if post_count > 0:
             result = False
@@ -443,11 +443,13 @@ class AccountAmortizationCommon(models.AbstractModel):
         obj_schedule = self.env[self._get_amortization_schedule_name()]
         pd_schedule = self._get_amortization_schedule()
         for period in range(0, self.period_number):
-            obj_schedule.create({
-                "amortization_id": self.id,
-                "date": pd_schedule[period].strftime("%Y-%m-%d"),
-                "amount": amount,
-            })
+            obj_schedule.create(
+                {
+                    "amortization_id": self.id,
+                    "date": pd_schedule[period].strftime("%Y-%m-%d"),
+                    "amount": amount,
+                }
+            )
 
     @api.multi
     def _get_amortization_schedule(self):
@@ -480,9 +482,11 @@ class AccountAmortizationCommon(models.AbstractModel):
         _super = super(AccountAmortizationCommon, self)
         result = _super.create(values)
         sequence = result._create_sequence()
-        result.write({
-            "name": sequence,
-        })
+        result.write(
+            {
+                "name": sequence,
+            }
+        )
         return result
 
     @api.multi

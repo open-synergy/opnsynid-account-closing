@@ -3,21 +3,19 @@
 # Copyright 2020 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api
+from openerp import api, fields, models
 
 
 class PrepaidExpenseAmortization(models.Model):
     _name = "account.prepaid_expense_amortization"
-    _inherit = [
-        "account.amortization_common"
-    ]
+    _inherit = ["account.amortization_common"]
     _description = "Prepaid Expense Amortization"
 
     @api.model
     def _default_type_id(self):
         return self.env.ref(
-            "account_amortization_prepaid_expense."
-            "amortization_type_prepaid_expense").id
+            "account_amortization_prepaid_expense." "amortization_type_prepaid_expense"
+        ).id
 
     @api.multi
     @api.depends(
