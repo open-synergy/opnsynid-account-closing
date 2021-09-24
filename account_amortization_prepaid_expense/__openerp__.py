@@ -23,6 +23,12 @@
         "data/ir_cron.xml",
         "views/account_prepaid_expense_amortization_views.xml",
     ],
+    "demo": [
+        "demo/account_journal_demo.xml",
+        "demo/account_account_demo.xml",
+        "demo/account_amortization_type_account_mapping_demo.xml",
+        "demo/tier_definition_demo.xml",
+    ],
     "images": [
         "static/description/banner.png",
     ],
