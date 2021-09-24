@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2020 OpenSynergy Indonesia
      Copyright 2020 PT Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
-
 <openerp>
 <data>
     <!--  Amortization Prepaid Income -->
@@ -14,13 +13,22 @@
             ('state', '=', 'draft'),
         ]
         </field>
-        <field name="model_id" ref="account_amortization_prepaid_income.model_account_prepaid_income_amortization" />
-        <field name="action_id" ref="account_amortization_prepaid_income.account_prepaid_income_amortization_action" />
+        <field
+                name="model_id"
+                ref="account_amortization_prepaid_income.model_account_prepaid_income_amortization"
+            />
+        <field
+                name="action_id"
+                ref="account_amortization_prepaid_income.account_prepaid_income_amortization_action"
+            />
         <field name="primary_function">count</field>
         <field name="background_color">#9CADA4</field>
     </record>
 
-    <record id="dashboard_tile_all_prepaid_income_amortization_waiting_for_approval" model="tile.tile">
+    <record
+            id="dashboard_tile_all_prepaid_income_amortization_waiting_for_approval"
+            model="tile.tile"
+        >
         <field name="name">All Prepaid Income Amortization: Waiting For Approval</field>
         <field name="sequence">15</field>
         <field name="domain">
@@ -28,13 +36,22 @@
         ('state', '=', 'confirm'),
         ]
         </field>
-        <field name="model_id" ref="account_amortization_prepaid_income.model_account_prepaid_income_amortization" />
-        <field name="action_id" ref="account_amortization_prepaid_income.account_prepaid_income_amortization_action" />
+        <field
+                name="model_id"
+                ref="account_amortization_prepaid_income.model_account_prepaid_income_amortization"
+            />
+        <field
+                name="action_id"
+                ref="account_amortization_prepaid_income.account_prepaid_income_amortization_action"
+            />
         <field name="primary_function">count</field>
         <field name="background_color">#9CADA4</field>
     </record>
-    
-    <record id="dashboard_tile_all_prepaid_income_amortization_ready_to_process" model="tile.tile">
+
+    <record
+            id="dashboard_tile_all_prepaid_income_amortization_ready_to_process"
+            model="tile.tile"
+        >
         <field name="name">All Prepaid Income Amortization: Ready To Process</field>
         <field name="sequence">15</field>
         <field name="domain">
@@ -42,8 +59,14 @@
         ('state', '=', 'approve'),
         ]
         </field>
-        <field name="model_id" ref="account_amortization_prepaid_income.model_account_prepaid_income_amortization" />
-        <field name="action_id" ref="account_amortization_prepaid_income.account_prepaid_income_amortization_action" />
+        <field
+                name="model_id"
+                ref="account_amortization_prepaid_income.model_account_prepaid_income_amortization"
+            />
+        <field
+                name="action_id"
+                ref="account_amortization_prepaid_income.account_prepaid_income_amortization_action"
+            />
         <field name="primary_function">count</field>
         <field name="background_color">#9CADA4</field>
     </record>

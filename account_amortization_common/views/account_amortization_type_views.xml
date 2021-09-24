@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2019 OpenSynergy Indonesia
      Copyright 2020 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
-
 <openerp>
 <data>
 <record id="account_amortization_type_view_search" model="ir.ui.view">
@@ -10,11 +9,11 @@
     <field name="model">account.amortization_type</field>
     <field name="arch" type="xml">
         <search>
-            <field name="name"/>
-            <field name="code"/>
-            <field name="direction"/>
-            <field name="journal_id"/>
-            <field name="sequence_id"/>
+            <field name="name" />
+            <field name="code" />
+            <field name="direction" />
+            <field name="journal_id" />
+            <field name="sequence_id" />
         </search>
     </field>
 </record>
@@ -24,11 +23,11 @@
     <field name="model">account.amortization_type</field>
     <field name="arch" type="xml">
         <tree create="false" delete="false">
-            <field name="name"/>
-            <field name="code"/>
-            <field name="direction"/>
-            <field name="journal_id"/>
-            <field name="sequence_id"/>
+            <field name="name" />
+            <field name="code" />
+            <field name="direction" />
+            <field name="journal_id" />
+            <field name="sequence_id" />
         </tree>
     </field>
 </record>
@@ -38,34 +37,46 @@
     <field name="model">account.amortization_type</field>
     <field name="arch" type="xml">
         <form create="false" delete="false">
-            <header/>
+            <header />
             <group name="group_1" colspan="4" col="2">
-                <field name="name"/>
-                <field name="code"/>
-                <field name="active"/>
-                <field name="direction"/>
-                <field name="journal_id"/>
-                <field name="sequence_id"/>
+                <field name="name" />
+                <field name="code" />
+                <field name="active" />
+                <field name="direction" />
+                <field name="journal_id" />
+                <field name="sequence_id" />
             </group>
             <notebook>
                 <page name="account_mapping" string="Account Mapping">
                     <field name="account_mapping_ids" colspan="4" nolabel="1">
                         <tree editable="top">
-                            <field name="account_id"/>
-                            <field name="contra_account_id"/>
+                            <field name="account_id" />
+                            <field name="contra_account_id" />
                         </tree>
                     </field>
                 </page>
                 <page name="workflow_policy" string="Workflow Policy">
                     <group name="workflow_policy_1" colspan="4" col="2">
-                        <field name="amortization_confirm_grp_ids" widget="many2many_tags"/>
-                        <field name="amortization_restart_validation_grp_ids" widget="many2many_tags"/>
-                        <field name="amortization_cancel_grp_ids" widget="many2many_tags"/>
-                        <field name="amortization_restart_grp_ids" widget="many2many_tags"/>
+                        <field
+                                    name="amortization_confirm_grp_ids"
+                                    widget="many2many_tags"
+                                />
+                        <field
+                                    name="amortization_restart_validation_grp_ids"
+                                    widget="many2many_tags"
+                                />
+                        <field
+                                    name="amortization_cancel_grp_ids"
+                                    widget="many2many_tags"
+                                />
+                        <field
+                                    name="amortization_restart_grp_ids"
+                                    widget="many2many_tags"
+                                />
                     </group>
                 </page>
                 <page name="note" string="Note">
-                    <field name="note" nolabel="1" colspan="4"/>
+                    <field name="note" nolabel="1" colspan="4" />
                 </page>
             </notebook>
         </form>
@@ -81,12 +92,12 @@
 </record>
 
 <menuitem
-    id="account_amortization_type_menu"
-    name="Amortization Type"
-    parent="account.menu_finance_configuration"
-    action="account_amortization_type_action"
-    sequence="10"
-    />
+            id="account_amortization_type_menu"
+            name="Amortization Type"
+            parent="account.menu_finance_configuration"
+            action="account_amortization_type_action"
+            sequence="10"
+        />
 
 </data>
 </openerp>

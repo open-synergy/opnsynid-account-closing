@@ -3,8 +3,8 @@
 # Copyright 2020 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api
 import openerp.addons.decimal_precision as dp
+from openerp import api, fields, models
 
 
 class AccountVarianceComputationLine(models.Model):
@@ -26,8 +26,7 @@ class AccountVarianceComputationLine(models.Model):
                     "period_from": computation.period_id.id,
                     "period_to": computation.period_id.id,
                 }
-                applied_cost = line.with_context(
-                    ctx).applied_account_id.balance
+                applied_cost = line.with_context(ctx).applied_account_id.balance
             variance = abs(line.cost_allocation - applied_cost)
             if line.cost_allocation > line.applied_cost:
                 under_variance = variance
@@ -50,25 +49,25 @@ class AccountVarianceComputationLine(models.Model):
     )
     applied_cost = fields.Float(
         string="Applied Cost",
-        digits=dp.get_precision('Account'),
+        digits=dp.get_precision("Account"),
         compute="_compute_cost",
         store=True,
     )
     under_variance = fields.Float(
         string="Under Variance",
-        digits=dp.get_precision('Account'),
+        digits=dp.get_precision("Account"),
         compute="_compute_cost",
         store=True,
     )
     over_variance = fields.Float(
         string="Over Variance",
-        digits=dp.get_precision('Account'),
+        digits=dp.get_precision("Account"),
         compute="_compute_cost",
         store=True,
     )
     cost_allocation = fields.Float(
         string="Cost Allocation",
-        digits=dp.get_precision('Account'),
+        digits=dp.get_precision("Account"),
     )
     over_variance_account_id = fields.Many2one(
         string="Over Variance Account",
@@ -99,22 +98,36 @@ class AccountVarianceComputationLine(models.Model):
         account_id = self._get_variance_account_id()
         debit, credit = self._get_amount()
         result = []
-        result.append((0, 0, {
-            "name": self.computation_id.name,
-            "account_id": account_id,
-            "credit": credit,
-            "debit": debit,
-            "analytic_account_id": self.analytic_account_id and
-            self.analytic_account_id.id or False,
-        }))
-        result.append((0, 0, {
-            "name": self.computation_id.name,
-            "account_id": self.applied_account_id.id,
-            "debit": self.applied_cost,
-            "credit": 0.0,
-            "analytic_account_id": self.analytic_account_id and
-            self.analytic_account_id.id or False,
-        }))
+        result.append(
+            (
+                0,
+                0,
+                {
+                    "name": self.computation_id.name,
+                    "account_id": account_id,
+                    "credit": credit,
+                    "debit": debit,
+                    "analytic_account_id": self.analytic_account_id
+                    and self.analytic_account_id.id
+                    or False,
+                },
+            )
+        )
+        result.append(
+            (
+                0,
+                0,
+                {
+                    "name": self.computation_id.name,
+                    "account_id": self.applied_account_id.id,
+                    "debit": self.applied_cost,
+                    "credit": 0.0,
+                    "analytic_account_id": self.analytic_account_id
+                    and self.analytic_account_id.id
+                    or False,
+                },
+            )
+        )
         return result
 
     @api.multi

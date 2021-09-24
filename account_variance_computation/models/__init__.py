@@ -6,5 +6,5 @@
 from . import (
     account_journal,
     account_variance_computation,
-    account_variance_computation_line
+    account_variance_computation_line,
 )

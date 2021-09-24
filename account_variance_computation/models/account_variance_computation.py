@@ -3,8 +3,8 @@
 # Copyright 2020 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from openerp import models, fields, api
 import openerp.addons.decimal_precision as dp
+from openerp import api, fields, models
 from openerp.exceptions import Warning as UserError
 from openerp.tools.translate import _
 
@@ -13,7 +13,7 @@ _STATE = [
     ("confirmed", "Waiting for Approval"),
     ("approved", "Approved"),
     ("posted", "Posted"),
-    ("cancelled", "Cancelled")
+    ("cancelled", "Cancelled"),
 ]
 
 
@@ -37,8 +37,7 @@ class AccountVarianceComputation(models.Model):
                     "period_from": computation.period_id.id,
                     "period_to": computation.period_id.id,
                 }
-                real_cost = computation.with_context(
-                    ctx).real_cost_account_id.balance
+                real_cost = computation.with_context(ctx).real_cost_account_id.balance
             for line in computation.line_ids:
                 total_cost_allocation += line.cost_allocation
             allocation_diff = real_cost - total_cost_allocation
@@ -84,21 +83,21 @@ class AccountVarianceComputation(models.Model):
 
     real_cost = fields.Float(
         String="Real Cost",
-        digits=dp.get_precision('Account'),
+        digits=dp.get_precision("Account"),
         compute="_compute_cost",
         store=True,
         copy=False,
     )
     total_cost_allocation = fields.Float(
         string="Total Cost Allocation",
-        digits=dp.get_precision('Account'),
+        digits=dp.get_precision("Account"),
         compute="_compute_cost",
         store=True,
         copy=False,
     )
     allocation_diff = fields.Float(
         string="Allocation Diff",
-        digits=dp.get_precision('Account'),
+        digits=dp.get_precision("Account"),
         compute="_compute_cost",
         store=True,
     )
@@ -228,33 +227,28 @@ class AccountVarianceComputation(models.Model):
     @api.multi
     def button_action_draft(self):
         for computation in self:
-            computation.write(
-                computation._prepare_draft_data())
+            computation.write(computation._prepare_draft_data())
 
     @api.multi
     def button_action_confirm(self):
         for computation in self:
-            computation.write(
-                computation._prepare_confirm_data())
+            computation.write(computation._prepare_confirm_data())
 
     @api.multi
     def button_action_approve(self):
         for computation in self:
-            computation.write(
-                computation._prepare_approve_data())
+            computation.write(computation._prepare_approve_data())
 
     @api.multi
     def button_action_post(self):
         for computation in self:
-            computation.write(
-                computation._prepare_post_data())
+            computation.write(computation._prepare_post_data())
 
     @api.multi
     def button_action_cancel(self):
         for computation in self:
             move = computation.account_move_id
-            computation.write(
-                computation._prepare_cancel_data())
+            computation.write(computation._prepare_cancel_data())
             move.unlink()
 
     @api.multi
@@ -319,8 +313,7 @@ class AccountVarianceComputation(models.Model):
     @api.multi
     def _create_account_move(self):
         self.ensure_one()
-        move = self.env["account.move"].create(
-            self._prepare_account_move_data())
+        move = self.env["account.move"].create(self._prepare_account_move_data())
         return move
 
     @api.multi
@@ -339,8 +332,7 @@ class AccountVarianceComputation(models.Model):
     def _prepare_account_move_line_data(self):
         self.ensure_one()
         result = []
-        result.append(
-            self._prepare_header_move_line())
+        result.append(self._prepare_header_move_line())
         for line in self.line_ids:
             result += line._prepare_account_move_line_data()
         return result
@@ -348,14 +340,19 @@ class AccountVarianceComputation(models.Model):
     @api.multi
     def _prepare_header_move_line(self):
         self.ensure_one()
-        result = (0, 0, {
-            "name": self.name,
-            "account_id": self.real_cost_account_id.id,
-            "credit": self.real_cost,
-            "debit": 0.0,
-            "analytic_account_id": self.analytic_account_id and
-            self.analytic_account_id.id or False,
-        })
+        result = (
+            0,
+            0,
+            {
+                "name": self.name,
+                "account_id": self.real_cost_account_id.id,
+                "credit": self.real_cost,
+                "debit": 0.0,
+                "analytic_account_id": self.analytic_account_id
+                and self.analytic_account_id.id
+                or False,
+            },
+        )
         return result
 
     @api.multi
@@ -385,10 +382,8 @@ class AccountVarianceComputation(models.Model):
 
     @api.multi
     def _create_sequence(self):
-        sequence = self.env.ref(
-            "account_variance_computation.variance_seq")
-        name = self.env["ir.sequence"].\
-            next_by_id(sequence.id) or "/"
+        sequence = self.env.ref("account_variance_computation.variance_seq")
+        name = self.env["ir.sequence"].next_by_id(sequence.id) or "/"
         return name
 
     @api.onchange("date_trx")
@@ -401,8 +396,7 @@ class AccountVarianceComputation(models.Model):
     )
     def _check_allocation_diff(self):
         if self.state == "confirmed" and self.allocation_diff > 0:
-            raise UserError(
-                _("There is still allocation difference"))
+            raise UserError(_("There is still allocation difference"))
 
     @api.constrains(
         "state",
@@ -410,5 +404,4 @@ class AccountVarianceComputation(models.Model):
     )
     def _check_real_cost(self):
         if self.state == "confirmed" and self.real_cost <= 0:
-            raise UserError(
-                _("Real cost has to be greater than 0"))
+            raise UserError(_("Real cost has to be greater than 0"))

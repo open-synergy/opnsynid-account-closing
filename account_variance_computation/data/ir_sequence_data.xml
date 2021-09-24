@@ -1,18 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <openerp>
 <data noupdate="1">
     <record id="seq_type_variance" model="ir.sequence.type">
         <field name="name">Variance Computation</field>
         <field name="code">account.variance_computation</field>
     </record>
-        
+
     <record id="variance_seq" model="ir.sequence">
         <field name="name">Variance Computation</field>
         <field name="code">account.variance_computation</field>
         <field name="padding">5</field>
         <field name="prefix">VC/%(year)s/</field>
-        <field eval="1" name="number_next"/>
-        <field eval="1" name="number_increment"/>
+        <field eval="1" name="number_next" />
+        <field eval="1" name="number_increment" />
     </record>
 </data>
 </openerp>
