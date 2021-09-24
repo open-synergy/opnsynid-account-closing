@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 try:
     import numpy as np
     import pandas as pd
-except (ImportError, IOError) as err:
+except (ImportError, IOError) as err:  # pragma: no cover
     _logger.debug(err)
 
 
@@ -331,8 +331,6 @@ class AccountAmortizationCommon(models.AbstractModel):
     def _prepare_approve_data(self):
         return {
             "state": "open",
-            "approve_date": fields.Datetime.now(),
-            "approve_user_id": self.env.user.id,
         }
 
     @api.multi
