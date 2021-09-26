@@ -13,6 +13,11 @@
     "depends": [
         "account_amortization_common",
     ],
+    "external_dependencies": {
+        "python": [
+            "ddt",
+        ],
+    },
     "data": [
         "security/ir.model.access.csv",
         "data/ir_sequence_data.xml",
