@@ -5,73 +5,13 @@
 
 from datetime import date
 
-from openerp.tests.common import TransactionCase
+from ddt import data, ddt, unpack
+
+from .base import BaseCase
 
 
-class TestOnchange(TransactionCase):
-    def setUp(self, *args, **kwargs):
-        result = super(TestOnchange, self).setUp(*args, **kwargs)
-        self.obj_amortization = self.env["account.prepaid_expense_amortization"]
-        self.obj_move = self.env["account.move"]
-        self.obj_move_line = self.env["account.move.line"]
-        self.obj_period = self.env["account.period"]
-        self.cash_journal = self.env.ref("account.cash_journal")
-        self.amortization_journal = self.env.ref(
-            "account_amortization_prepaid_expense.demo_journal1"
-        )
-
-        self.cash_account = self.env.ref("account.cash")
-        self.prepaid_account1 = self.env.ref(
-            "account_amortization_prepaid_expense.demo_account1"
-        )
-        self.prepaid_account2 = self.env.ref(
-            "account_amortization_prepaid_expense.demo_account2"
-        )
-        self.expense_account1 = self.env.ref(
-            "account_amortization_prepaid_expense.demo_account3"
-        )
-        self.expense_account2 = self.env.ref(
-            "account_amortization_prepaid_expense.demo_account4"
-        )
-
-        self.partner1 = self.env.ref("base.res_partner_2")
-
-        self.type_amortization = self.env.ref(
-            "account_amortization_prepaid_expense.amortization_type_prepaid_expense"
-        )
-
-        return result
-
-    def _create_payment(self):
-        values = {
-            "date": date(date.today().year, 1, 1).strftime("%Y-%m-%d"),
-            "journal_id": self.cash_journal.id,
-            "period_id": self.obj_period.find().id,
-            "line_id": [
-                (
-                    0,
-                    0,
-                    {
-                        "name": "test prepaid",
-                        "account_id": self.cash_account.id,
-                        "debit": 1200.00,
-                        "partner_id": self.partner1.id,
-                    },
-                ),
-                (
-                    0,
-                    0,
-                    {
-                        "name": "test prepaid",
-                        "account_id": self.prepaid_account1.id,
-                        "credit": 1200.00,
-                        "partner_id": self.partner1.id,
-                    },
-                ),
-            ],
-        }
-        return self.obj_move.create(values)
-
+@ddt
+class TestOnchange(BaseCase):
     def test_prepaid_expense_amortization_onchange_move_line_id(self):
         values = {
             "type_id": self.type_amortization.id,
@@ -80,16 +20,32 @@ class TestOnchange(TransactionCase):
         amortization.onchange_move_line_id()
         self.assertEqual(amortization.move_line_id, self.obj_move_line)
 
-    def test_prepaid_expense_amortization_onchange_contra_account_id(self):
-        payment = self._create_payment()
-        move_line = payment.line_id.filtered(lambda r: r.credit > 0.0)[0]
+    @data(
+        ["prepaid_account1", "expense_account1"],
+        ["prepaid_account2", "expense_account2"],
+    )
+    @unpack
+    def test_prepaid_expense_amortization_onchange_contra_account_id(
+        self, prepaid_account_name, expense_account_name
+    ):
+        prepaid_account = getattr(self, prepaid_account_name)
+        expense_account = getattr(self, expense_account_name)
+        payment, debit_line, credit_line = self._create_payment_receipt(
+            direction="payment",
+            partner=self.partner1,
+            transaction_date=date(date.today().year, 1, 1).strftime("%Y-%m-%d"),
+            journal=self.cash_journal,
+            liquidity_account=self.cash_account,
+            prepaid_account=prepaid_account,
+            amount=1200.00,
+        )
         values = {
             "type_id": self.type_amortization.id,
-            "move_line_id": move_line.id,
+            "move_line_id": debit_line.id,
         }
         amortization = self.obj_amortization.new(values)
         amortization.onchange_contra_account_id()
-        self.assertEqual(amortization.contra_account_id, self.expense_account1)
+        self.assertEqual(amortization.contra_account_id, expense_account)
 
     def test_prepaid_expense_amortization_onchange_journal_id(self):
         self.type_amortization.write(
@@ -103,3 +59,8 @@ class TestOnchange(TransactionCase):
         amortization = self.obj_amortization.new(values)
         amortization.onchange_journal_id()
         self.assertEqual(amortization.journal_id, self.amortization_journal)
+
+    @data([1, 2], [4, 3])
+    @unpack
+    def test_ddt(self, value1, value2):
+        pass

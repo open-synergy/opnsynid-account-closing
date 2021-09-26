@@ -1,0 +1,23 @@
+scenario1:
+  prepaid_amount: 1200.00
+  prepaid_period: 3
+  amortization_schedule:
+    - amount_amortize: 400.00
+      amount_residual: 800.00
+    - amount_amortize: 400.00
+      amount_residual: 400.00
+    - amount_amortize: 400.00
+      amount_residual: 0.00
+
+scenario2:
+  prepaid_amount: 1250.00
+  prepaid_period: 4
+  amortization_schedule:
+    - amount_amortize: 312.50
+      amount_residual: 937.50
+    - amount_amortize: 312.50
+      amount_residual: 625.00
+    - amount_amortize: 312.50
+      amount_residual: 312.50
+    - amount_amortize: 312.50
+      amount_residual: 0.00

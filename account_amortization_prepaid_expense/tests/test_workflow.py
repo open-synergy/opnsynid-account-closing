@@ -5,89 +5,41 @@
 
 from datetime import date
 
+from ddt import ddt, file_data
 from openerp import tools
 from openerp.exceptions import Warning as UserError
-from openerp.tests.common import TransactionCase
+
+from .base import BaseCase
 
 
-class TestPrepaidExpenseAmortization(TransactionCase):
-    def setUp(self, *args, **kwargs):
-        result = super(TestPrepaidExpenseAmortization, self).setUp(*args, **kwargs)
-        self.obj_amortization = self.env["account.prepaid_expense_amortization"]
-        self.obj_move = self.env["account.move"]
-        self.obj_period = self.env["account.period"]
-        self.cash_journal = self.env.ref("account.cash_journal")
-        self.amortization_journal = self.env.ref(
-            "account_amortization_prepaid_expense.demo_journal1"
+@ddt
+class TestPrepaidExpenseAmortization(BaseCase):
+    def _create_no_error(self, prepaid_amount=0.0, prepaid_period=12):
+        payment, debit_line, credit_line = self._create_payment_receipt(
+            direction="payment",
+            partner=self.partner1,
+            transaction_date=date(date.today().year, 1, 1).strftime("%Y-%m-%d"),
+            journal=self.cash_journal,
+            liquidity_account=self.cash_account,
+            prepaid_account=self.prepaid_account1,
+            amount=prepaid_amount != 0.0 and prepaid_amount or 1200.00,
         )
-
-        self.cash_account = self.env.ref("account.cash")
-        self.prepaid_account1 = self.env.ref(
-            "account_amortization_prepaid_expense.demo_account1"
-        )
-        self.prepaid_account2 = self.env.ref(
-            "account_amortization_prepaid_expense.demo_account2"
-        )
-        self.expense_account1 = self.env.ref(
-            "account_amortization_prepaid_expense.demo_account3"
-        )
-        self.expense_account2 = self.env.ref(
-            "account_amortization_prepaid_expense.demo_account4"
-        )
-
-        self.partner1 = self.env.ref("base.res_partner_2")
-
-        return result
-
-    def _create_payment(self):
         values = {
             "date": date(date.today().year, 1, 1).strftime("%Y-%m-%d"),
-            "journal_id": self.cash_journal.id,
-            "period_id": self.obj_period.find().id,
-            "line_id": [
-                (
-                    0,
-                    0,
-                    {
-                        "name": "test prepaid",
-                        "account_id": self.cash_account.id,
-                        "debit": 1200.00,
-                        "partner_id": self.partner1.id,
-                    },
-                ),
-                (
-                    0,
-                    0,
-                    {
-                        "name": "test prepaid",
-                        "account_id": self.prepaid_account1.id,
-                        "credit": 1200.00,
-                        "partner_id": self.partner1.id,
-                    },
-                ),
-            ],
-        }
-        return self.obj_move.create(values)
-
-    def _create_no_error(self):
-        payment = self._create_payment()
-        move_line = payment.line_id.filtered(lambda r: r.credit > 0.0)[0]
-        values = {
-            "date": date(date.today().year, 1, 1).strftime("%Y-%m-%d"),
-            "move_line_id": move_line.id,
+            "move_line_id": debit_line.id,
             "journal_id": self.amortization_journal.id,
             "contra_account_id": self.expense_account1.id,
             "date_start": date(date.today().year, 1, 1).strftime("%Y-%m-%d"),
             "period": "monthly",
-            "period_number": 12,
+            "period_number": prepaid_period,
         }
         amortization = self.obj_amortization.create(values)
         self.assertEqual(amortization.state, "draft")
         return amortization
 
-    def action_create_schedule_no_error(self, amortization):
+    def action_create_schedule_no_error(self, amortization, prepaid_period):
         amortization.action_compute_amortization_schedule()
-        self.assertEqual(len(amortization.schedule_ids), 12)
+        self.assertEqual(len(amortization.schedule_ids), prepaid_period)
 
     def action_confirm_no_error(self, amortization):
         amortization.action_confirm()
@@ -131,65 +83,97 @@ class TestPrepaidExpenseAmortization(TransactionCase):
         self.assertTrue(amortization.validated)
         self.assertEqual(amortization.state, "open")
 
-    def action_amortize_no_error(self, amortization):
+    def action_amortize_no_error(
+        self, amortization, prepaid_period, amortization_schedule
+    ):
+        index = 0
         for schedule in amortization.schedule_ids:
             schedule.action_create_account_move()
             self.assertEqual(schedule.state, "post")
+            self.assertEqual(
+                schedule.amount, amortization_schedule[index]["amount_amortize"]
+            )
+            self.assertEqual(
+                amortization.amount_residual,
+                amortization_schedule[index]["amount_residual"],
+            )
+            index += 1
 
     def action_undo_amortize_no_error(self, amortization):
         for schedule in amortization.schedule_ids:
             schedule.action_remove_account_move()
             self.assertEqual(schedule.state, "draft")
 
-    def test_prepaid_expense_amortization1(self):
+    @file_data("scenario_prepaid.yaml")
+    def test_prepaid_expense_amortization1(
+        self, prepaid_amount, prepaid_period, amortization_schedule
+    ):
         """
         create, confirm, approve, pay
         """
-        amortization = self._create_no_error()
-        self.action_create_schedule_no_error(amortization)
+        amortization = self._create_no_error(prepaid_amount, prepaid_period)
+        self.action_create_schedule_no_error(amortization, prepaid_period)
         self.action_confirm_no_error(amortization)
         self.action_approve_no_error(amortization)
-        self.action_amortize_no_error(amortization)
+        self.action_amortize_no_error(
+            amortization, prepaid_period, amortization_schedule
+        )
         self.action_done_no_error(amortization)
 
-    def test_prepaid_expense_amortization2(self):
+    @file_data("scenario_prepaid.yaml")
+    def test_prepaid_expense_amortization2(
+        self, prepaid_amount, prepaid_period, amortization_schedule
+    ):
         """
         create, confirm, approve, pay
         """
-        amortization = self._create_no_error()
-        self.action_create_schedule_no_error(amortization)
+        amortization = self._create_no_error(prepaid_amount, prepaid_period)
+        self.action_create_schedule_no_error(amortization, prepaid_period)
         self.action_confirm_no_error(amortization)
         self.action_approve_no_error(amortization)
-        self.action_amortize_no_error(amortization)
+        self.action_amortize_no_error(
+            amortization, prepaid_period, amortization_schedule
+        )
         self.action_undo_amortize_no_error(amortization)
         self.action_cancel_no_error(amortization)
         self.action_restart_no_error(amortization)
 
-    def test_prepaid_expense_amortization3(self):
+    @file_data("scenario_prepaid.yaml")
+    def test_prepaid_expense_amortization3(
+        self, prepaid_amount, prepaid_period, amortization_schedule
+    ):
         """
         create, confirm, approve, pay
         """
-        amortization = self._create_no_error()
-        self.action_create_schedule_no_error(amortization)
+        amortization = self._create_no_error(prepaid_amount, prepaid_period)
+        self.action_create_schedule_no_error(amortization, prepaid_period)
         self.action_confirm_no_error(amortization)
         self.unlink_error(amortization)
 
-    def test_prepaid_expense_amortization4(self):
+    @file_data("scenario_prepaid.yaml")
+    def test_prepaid_expense_amortization4(
+        self, prepaid_amount, prepaid_period, amortization_schedule
+    ):
         """
         create, confirm, approve, pay
         """
-        amortization = self._create_no_error()
+        amortization = self._create_no_error(prepaid_amount, prepaid_period)
         self.unlink_no_error(amortization)
 
-    def test_prepaid_expense_amortization5(self):
+    @file_data("scenario_prepaid.yaml")
+    def test_prepaid_expense_amortization5(
+        self, prepaid_amount, prepaid_period, amortization_schedule
+    ):
         """
         create, confirm, approve, pay
         """
-        amortization = self._create_no_error()
-        self.action_create_schedule_no_error(amortization)
+        amortization = self._create_no_error(prepaid_amount, prepaid_period)
+        self.action_create_schedule_no_error(amortization, prepaid_period)
         self.action_confirm_no_error(amortization)
         self.action_approve_no_error(amortization)
-        self.action_amortize_no_error(amortization)
+        self.action_amortize_no_error(
+            amortization, prepaid_period, amortization_schedule
+        )
         self.action_cancel_error(amortization)
         self.action_undo_amortize_no_error(amortization)
         self.action_cancel_no_error(amortization)
