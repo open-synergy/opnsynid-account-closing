@@ -1,23 +1,135 @@
 scenario1:
-  prepaid_amount: 1200.00
-  prepaid_period: 3
-  amortization_schedule:
-    - amount_amortize: 400.00
-      amount_residual: 800.00
-    - amount_amortize: 400.00
-      amount_residual: 400.00
-    - amount_amortize: 400.00
-      amount_residual: 0.00
+  attribute:
+    prepaid_amount: 1200.00
+    prepaid_period: 3
+    amortization_schedule:
+      - amount_amortize: 400.00
+        amount_residual: 800.00
+      - amount_amortize: 400.00
+        amount_residual: 400.00
+      - amount_amortize: 400.00
+        amount_residual: 0.00
+  workflow_steps:
+    - name: create_schedule
+      error: false
+    - name: confirm
+      error: false
+    - name: approve
+      error: false
+    - name: amortize
+      error: false
+    - name: done
+      error: false
 
 scenario2:
-  prepaid_amount: 1250.00
-  prepaid_period: 4
-  amortization_schedule:
-    - amount_amortize: 312.50
-      amount_residual: 937.50
-    - amount_amortize: 312.50
-      amount_residual: 625.00
-    - amount_amortize: 312.50
-      amount_residual: 312.50
-    - amount_amortize: 312.50
-      amount_residual: 0.00
+  attribute:
+    prepaid_amount: 1250.00
+    prepaid_period: 4
+    amortization_schedule:
+      - amount_amortize: 312.50
+        amount_residual: 937.50
+      - amount_amortize: 312.50
+        amount_residual: 625.00
+      - amount_amortize: 312.50
+        amount_residual: 312.50
+      - amount_amortize: 312.50
+        amount_residual: 0.00
+  workflow_steps:
+    - name: create_schedule
+      error: false
+    - name: confirm
+      error: false
+    - name: approve
+      error: false
+    - name: amortize
+      error: false
+    - name: done
+      error: false
+
+scenario3:
+  attribute:
+    prepaid_amount: 1200.00
+    prepaid_period: 3
+    amortization_schedule:
+      - amount_amortize: 400.00
+        amount_residual: 800.00
+      - amount_amortize: 400.00
+        amount_residual: 400.00
+      - amount_amortize: 400.00
+        amount_residual: 0.00
+  workflow_steps:
+    - name: create_schedule
+      error: false
+    - name: confirm
+      error: false
+    - name: approve
+      error: false
+    - name: amortize
+      error: false
+    - name: undo_amortize
+      error: false
+    - name: cancel
+      error: false
+    - name: restart
+      error: false
+
+scenario4:
+  attribute:
+    prepaid_amount: 1200.00
+    prepaid_period: 3
+    amortization_schedule:
+      - amount_amortize: 400.00
+        amount_residual: 800.00
+      - amount_amortize: 400.00
+        amount_residual: 400.00
+      - amount_amortize: 400.00
+        amount_residual: 0.00
+  workflow_steps:
+    - name: create_schedule
+      error: false
+    - name: confirm
+      error: false
+    - name: unlink
+      error: true
+
+scenario5:
+  attribute:
+    prepaid_amount: 1200.00
+    prepaid_period: 3
+    amortization_schedule:
+      - amount_amortize: 400.00
+        amount_residual: 800.00
+      - amount_amortize: 400.00
+        amount_residual: 400.00
+      - amount_amortize: 400.00
+        amount_residual: 0.00
+  workflow_steps:
+    - name: unlink
+      error: false
+
+scenario6:
+  attribute:
+    prepaid_amount: 1200.00
+    prepaid_period: 3
+    amortization_schedule:
+      - amount_amortize: 400.00
+        amount_residual: 800.00
+      - amount_amortize: 400.00
+        amount_residual: 400.00
+      - amount_amortize: 400.00
+        amount_residual: 0.00
+  workflow_steps:
+    - name: create_schedule
+      error: false
+    - name: confirm
+      error: false
+    - name: approve
+      error: false
+    - name: amortize
+      error: false
+    - name: cancel
+      error: true
+    - name: undo_amortize
+      error: false
+    - name: cancel
+      error: false
