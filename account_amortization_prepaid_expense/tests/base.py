@@ -13,6 +13,11 @@ class BaseCase(TransactionCase):
         self.obj_move = self.env["account.move"]
         self.obj_move_line = self.env["account.move.line"]
         self.obj_period = self.env["account.period"]
+        self.obj_user = self.env["res.users"]
+        self.obj_group = self.env["res.groups"]
+
+        self.group_employee = self.env.ref("base.group_user")
+
         self.cash_journal = self.env.ref("account.cash_journal")
         self.amortization_journal = self.env.ref(
             "account_amortization_prepaid_expense.demo_journal1"
@@ -36,6 +41,45 @@ class BaseCase(TransactionCase):
 
         self.type_amortization = self.env.ref(
             "account_amortization_prepaid_expense.amortization_type_prepaid_expense"
+        )
+
+        self.user1 = self.obj_user.create(
+            {
+                "name": "User1",
+                "login": "user1",
+            }
+        )
+
+        self.group_confirm = self.obj_group.create(
+            {
+                "name": "Group to Confirm",
+            }
+        )
+        self.group_cancel = self.obj_group.create(
+            {
+                "name": "Group to Cancel",
+            }
+        )
+        self.group_restart = self.obj_group.create(
+            {
+                "name": "Group to Restart",
+            }
+        )
+        self.group_restart_validation = self.obj_group.create(
+            {
+                "name": "Group to Restart Validation",
+            }
+        )
+
+        self.type_amortization.write(
+            {
+                "amortization_confirm_grp_ids": [(6, 0, [self.group_confirm.id])],
+                "amortization_restart_validation_grp_ids": [
+                    (6, 0, [self.group_restart_validation.id])
+                ],
+                "amortization_restart_grp_ids": [(6, 0, [self.group_restart.id])],
+                "amortization_cancel_grp_ids": [(6, 0, [self.group_cancel.id])],
+            }
         )
 
         return result

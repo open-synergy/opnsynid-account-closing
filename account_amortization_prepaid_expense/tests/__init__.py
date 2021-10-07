@@ -7,4 +7,5 @@ from . import (
     test_workflow,
     test_onchange,
     test_constrains,
+    test_workflow_policy,
 )
