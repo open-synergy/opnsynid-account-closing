@@ -441,6 +441,9 @@ class AccountAmortizationCommon(models.AbstractModel):
         obj_schedule = self.env[self._get_amortization_schedule_name()]
         pd_schedule = self._get_amortization_schedule()
         for period in range(0, self.period_number):
+            if period == (self.period_number - 1):
+                if self.amount != self.period_number * round(amount, 2):
+                    amount = self.amount - (period * round(amount, 2))
             obj_schedule.create(
                 {
                     "amortization_id": self.id,
