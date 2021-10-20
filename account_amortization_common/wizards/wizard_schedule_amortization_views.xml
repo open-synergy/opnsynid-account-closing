@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<openerp>
+    <data>
+        <record id="view_amortization_schedule_confirmation_wizard" model="ir.ui.view">
+            <field
+                name="name"
+            >account.amortization_schedule_common.confirmation.wizard</field>
+            <field
+                name="model"
+            >account.amortization_schedule_common.confirmation.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="type_id" />
+                        <field name="period_id" />
+                    </group>
+                    <footer>
+                        <button
+                            string="Compute"
+                            name="amortization_schedule_compute"
+                            type="object"
+                            class="oe_highlight"
+                        />
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+             </field>
+        </record>
+
+        <record
+            id="action_amortization_schedule_confirmation_wizard"
+            model="ir.actions.act_window"
+        >
+            <field name="name">Compute Amortization</field>
+            <field
+                name="res_model"
+            >account.amortization_schedule_common.confirmation.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field
+                name="view_id"
+                ref="view_amortization_schedule_confirmation_wizard"
+            />
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+            action="action_amortization_schedule_confirmation_wizard"
+            id="menu_amortization_schedule_confirmation_wizard"
+            parent="account_amortization_common.amortization_menu"
+        />
+
+    </data>
+</openerp>

@@ -4,7 +4,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "Common Amortization Feature",
-    "version": "8.0.2.1.0",
+    "version": "8.0.2.2.0",
     "category": "Accounting",
     "website": "https://simetri-sinergi.id",
     "author": "PT. Simetri Sinergi Indonesia, OpenSynergy Indonesia",
@@ -29,6 +29,7 @@
         "menu.xml",
         "views/account_amortization_type_views.xml",
         "views/account_amortization_common_views.xml",
+        "wizards/wizard_schedule_amortization_views.xml",
     ],
     "images": [
         "static/description/banner.png",
