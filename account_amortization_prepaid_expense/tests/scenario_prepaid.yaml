@@ -133,3 +133,32 @@ scenario6:
       error: false
     - name: cancel
       error: false
+
+scenario7:
+  attribute:
+    prepaid_amount: 1270.00
+    prepaid_period: 6
+    amortization_schedule:
+      - amount_amortize: 211.67
+        amount_residual: 1058.33
+      - amount_amortize: 211.67
+        amount_residual: 846.66
+      - amount_amortize: 211.67
+        amount_residual: 634.99
+      - amount_amortize: 211.67
+        amount_residual: 423.32
+      - amount_amortize: 211.67
+        amount_residual: 211.65
+      - amount_amortize: 211.65
+        amount_residual: 0.00
+  workflow_steps:
+    - name: create_schedule
+      error: false
+    - name: confirm
+      error: false
+    - name: approve
+      error: false
+    - name: amortize
+      error: false
+    - name: done
+      error: false

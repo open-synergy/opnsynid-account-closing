@@ -88,9 +88,12 @@ class TestPrepaidExpenseAmortization(BaseCase):
         index = 0
         for schedule in amortization.schedule_ids:
             schedule.action_create_account_move()
+            amount = round(
+                schedule.amount, self.env["decimal.precision"].precision_get("Account")
+            )
             self.assertEqual(schedule.state, "post")
             self.assertEqual(
-                schedule.amount,
+                amount,
                 attribute["amortization_schedule"][index]["amount_amortize"],
             )
             self.assertEqual(
