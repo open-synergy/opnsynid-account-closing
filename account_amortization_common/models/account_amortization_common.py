@@ -468,10 +468,11 @@ class AccountAmortizationCommon(models.AbstractModel):
         "date_start",
     )
     def constrains_date_start(self):
-        if self.move_line_id and self.date_start:
-            if self.move_line_id.date > self.date_start:
-                msg = _("Date start has to be greater than effective date")
-                raise UserError(msg)
+        msg = _("Date start has to be greater than effective date")
+        for record in self:
+            if record.date and record.date_start:
+                if record.date > record.date_start:
+                    raise UserError(msg)
 
     @api.constrains(
         "move_line_id",
