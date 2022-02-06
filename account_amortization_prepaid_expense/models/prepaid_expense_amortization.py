@@ -23,6 +23,12 @@ class PrepaidExpenseAmortization(models.Model):
         "move_line_id.account_id",
         "move_line_id.reconcile_id",
         "move_line_id.reconcile_partial_id",
+        "source",
+        "amount",
+        "schedule_ids",
+        "schedule_ids.state",
+        "schedule_ids.manual",
+        "schedule_ids.move_id",
     )
     def _compute_move_line(self):
         _super = super(PrepaidExpenseAmortization, self)
