@@ -4,7 +4,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "Common Amortization Feature",
-    "version": "8.0.2.2.0",
+    "version": "8.0.2.3.0",
     "category": "Accounting",
     "website": "https://simetri-sinergi.id",
     "author": "PT. Simetri Sinergi Indonesia, OpenSynergy Indonesia",

@@ -88,6 +88,7 @@
     <field name="arch" type="xml">
         <tree>
             <field name="name" />
+            <field name="source" />
             <field name="move_line_id" />
             <field name="date" />
             <field name="account_id" />
@@ -231,6 +232,7 @@
                 <group name="group_1" colspan="4" col="2">
                     <group name="group_1_1" colspan="1" col="2">
                         <field name="type_id" invisible="1" />
+                        <field name="source" />
                         <field
                                     name="allowed_move_line_ids"
                                     widget="many2many_tags"
@@ -239,6 +241,7 @@
                         <field
                                     name="move_line_id"
                                     domain="[('id','in',allowed_move_line_ids[0][2])]"
+                                    attrs="{'invisible':[('source','=','manual')]}"
                                 />
                         <field name="date" />
                         <field name="currency_id" />
@@ -268,17 +271,36 @@
                             <field name="period_number" />
                         </group>
                         <field name="schedule_ids" colspan="4" nolabel="1">
-                            <tree create="false" edit="false" delete="false">
+                            <tree
+                                        create="false"
+                                        edit="false"
+                                        delete="false"
+                                        options="{'reload_on_button': true}"
+                                    >
                                 <field name="date" />
                                 <field name="amount" />
                                 <field name="state" />
                                 <field name="amortization_state" invisible="1" />
+                                <button
+                                            name="action_mark_as_manual"
+                                            string="Mark as Manual"
+                                            type="object"
+                                            icon="gtk-disconnect"
+                                            attrs="{'invisible':['|',('state','!=','draft'),('amortization_state','!=','open')]}"
+                                        />
                                 <button
                                             name="action_create_account_move"
                                             string="Create Account Move"
                                             type="object"
                                             icon="gtk-execute"
                                             attrs="{'invisible':['|',('state','!=','draft'),('amortization_state','!=','open')]}"
+                                        />
+                                <button
+                                            name="action_unmark_as_manual"
+                                            string="Unmark as Manual"
+                                            type="object"
+                                            icon="gtk-connect"
+                                            attrs="{'invisible':['|',('state','!=','manual'),('amortization_state','!=','open')]}"
                                         />
                                 <button
                                             name="action_remove_account_move"

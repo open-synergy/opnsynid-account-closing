@@ -58,12 +58,7 @@ class AccountAmortizationCommon(models.AbstractModel):
     def _compute_move_line(self):
         for document in self:
             aml = document.move_line_id
-            account_id = aml.account_id.id
-            if aml.debit > 0:
-                amount = aml.debit
-            else:
-                amount = aml.credit
-            residual = aml.amount_residual
+            residual = amortized = 0.0
 
             currency_id = (
                 aml.currency_id
@@ -71,8 +66,13 @@ class AccountAmortizationCommon(models.AbstractModel):
                 or document.company_id.currency_id.id
             )
 
-            document.account_id = account_id
-            document.amount = amount
+            for line in document.schedule_ids.filtered(
+                lambda r: r.state in ["post", "manual"]
+            ):
+                amortized += line.amount
+
+            residual = document.amount - amortized
+
             document.amount_residual = residual
             document.currency_id = currency_id
 
@@ -111,10 +111,25 @@ class AccountAmortizationCommon(models.AbstractModel):
             ],
         },
     )
+    source = fields.Selection(
+        string="Source",
+        selection=[
+            ("move", "Journal Entry"),
+            ("manual", "Manual"),
+        ],
+        default="move",
+        required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
     move_line_id = fields.Many2one(
         string="Move Line",
         comodel_name="account.move.line",
-        required=True,
+        required=False,
         ondelete="restrict",
         readonly=True,
         states={
@@ -131,8 +146,15 @@ class AccountAmortizationCommon(models.AbstractModel):
     account_id = fields.Many2one(
         string="Amortization Account",
         comodel_name="account.account",
-        compute="_compute_move_line",
+        compute=False,
         store=True,
+        required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
     )
     contra_account_id = fields.Many2one(
         string="Amortization Contra Account",
@@ -177,7 +199,13 @@ class AccountAmortizationCommon(models.AbstractModel):
     )
     date = fields.Date(
         string="Transaction Date",
+        required=True,
         readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
     )
     date_start = fields.Date(
         string="Start Amortization",
@@ -224,8 +252,15 @@ class AccountAmortizationCommon(models.AbstractModel):
     )
     amount = fields.Float(
         string="Amount",
-        compute="_compute_move_line",
+        compute=False,
         store=True,
+        required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
     )
     amount_residual = fields.Float(
         string="Amount Residual",
@@ -382,6 +417,30 @@ class AccountAmortizationCommon(models.AbstractModel):
         if self.type_id.journal_id:
             self.journal_id = self.type_id.journal_id.id
 
+    @api.onchange("source", "move_line_id")
+    def onchange_account_id(self):
+        self.account_id = False
+        if self.source == "move" and self.move_line_id:
+            ml = self.move_line_id
+            self.account_id = ml.account_id
+
+    @api.onchange("source", "move_line_id")
+    def onchange_date(self):
+        self.date = False
+        if self.source == "move" and self.move_line_id:
+            ml = self.move_line_id
+            self.date = ml.date
+
+    @api.onchange("source", "move_line_id")
+    def onchange_amount(self):
+        self.amount = 0.0
+        if self.source == "move" and self.move_line_id:
+            ml = self.move_line_id
+            if ml.debit > 0.0:
+                self.amount = ml.debit
+            elif ml.credit > 0.0:
+                self.amount = ml.credit
+
     @api.multi
     def _check_done(self):
         self.ensure_one()
@@ -395,7 +454,10 @@ class AccountAmortizationCommon(models.AbstractModel):
         self.ensure_one()
         result = True
         obj_schedule = self.env[self._get_amortization_schedule_name()]
-        criteria = [("state", "=", "post"), ("amortization_id", "=", self.id)]
+        criteria = [
+            ("state", "in", ["post", "manual"]),
+            ("amortization_id", "=", self.id),
+        ]
         post_count = obj_schedule.search_count(criteria)
         if post_count > 0:
             result = False

@@ -15,6 +15,19 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
         for document in self:
             document.amortization_state = document.amortization_id.state
 
+    @api.multi
+    def _compute_state(self):
+        for record in self:
+            state = "draft"
+
+            if record.manual:
+                state = "manual"
+
+            if record.move_id:
+                state = "post"
+
+            record.state = state
+
     amortization_id = fields.Many2one(
         string="Amortization",
         comodel_name="account.amortization_common",
@@ -51,14 +64,19 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
         compute="_compute_amortization_state",
         store=False,
     )
+    manual = fields.Boolean(
+        string="Manual",
+        readonly=True,
+    )
     state = fields.Selection(
         string="State",
         selection=[
             ("draft", "Draft"),
+            ("manual", "Manually Controlled"),
             ("post", "Posted"),
         ],
-        required=True,
-        default="draft",
+        compute="_compute_state",
+        store=True,
     )
 
     @api.multi
@@ -70,6 +88,7 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
                     "state": "post",
                 }
             )
+            document.amortization_id._compute_move_line()
             if document.amortization_id._check_done():
                 document.amortization_id.action_done()
 
@@ -84,7 +103,36 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
             )
 
     @api.multi
+    def action_mark_as_manual(self):
+        for record in self:
+            record.write(
+                {
+                    "manual": True,
+                }
+            )
+
+    @api.multi
+    def action_unmark_as_manual(self):
+        for record in self:
+            record.write(
+                {
+                    "manual": False,
+                }
+            )
+
+    @api.multi
     def _remove_account_move(self):
+        self.ensure_one()
+
+        if self.amortization_id.move_line_id:
+            self._unreconcile_account_move()
+
+        move = self.move_id
+        self.write({"move_line_id": False})
+        move.unlink()
+
+    @api.multi
+    def _unreconcile_account_move(self):
         self.ensure_one()
         aml = self.amortization_id.move_line_id
         reconcile = aml.reconcile_id or aml.reconcile_partial_id or False
@@ -95,23 +143,27 @@ class AccountAmortizationScheduleCommon(models.AbstractModel):
 
             if len(move_lines) >= 2:
                 move_lines.reconcile_partial()
-        move = self.move_id
-        self.write({"move_line_id": False})
-        move.unlink()
 
     @api.multi
     def _create_account_move(self):
         self.ensure_one()
         obj_move = self.env["account.move"]
         obj_aml = self.env["account.move.line"]
-        aml_to_be_reconcile = self.amortization_id.move_line_id
         move = obj_move.create(self._prepare_account_move())
         aml = obj_aml.create(self._prepare_amortization_aml(move))
         self.write({"move_line_id": aml.id})
-        aml_to_be_reconcile += aml
         obj_aml.create(self._prepare_contra_amortization_aml(move))
-        aml_to_be_reconcile.reconcile_partial()
+
+        if self.amortization_id.move_line_id:
+            self._reconcile_account_move()
         return move
+
+    @api.multi
+    def _reconcile_account_move(self):
+        self.ensure_one()
+        aml_to_be_reconcile = self.amortization_id.move_line_id
+        aml_to_be_reconcile += self.move_line_id
+        aml_to_be_reconcile.reconcile_partial()
 
     @api.multi
     def _prepare_account_move(self):
