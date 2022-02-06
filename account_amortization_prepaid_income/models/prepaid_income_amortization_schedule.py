@@ -16,6 +16,15 @@ class PrepaidIncomeAmortizationSchedule(models.Model):
         _super = super(PrepaidIncomeAmortizationSchedule, self)
         _super._compute_amortization_state()
 
+    @api.multi
+    @api.depends(
+        "manual",
+        "move_id",
+    )
+    def _compute_state(self):
+        _super = super(PrepaidIncomeAmortizationSchedule, self)
+        _super._compute_state()
+
     amortization_id = fields.Many2one(
         string="Amortization",
         comodel_name="account.prepaid_income_amortization",
