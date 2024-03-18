@@ -4,7 +4,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "Prepaid Expense Amortization",
-    "version": "8.0.1.2.0",
+    "version": "8.0.1.2.1",
     "category": "Accounting",
     "website": "https://simetri-sinergi.id",
     "author": "PT. Simetri Sinergi Indonesia, OpenSynergy Indonesia",
@@ -13,11 +13,6 @@
     "depends": [
         "account_amortization_common",
     ],
-    "external_dependencies": {
-        "python": [
-            "ddt",
-        ],
-    },
     "data": [
         "security/ir.model.access.csv",
         "data/ir_sequence_data.xml",
